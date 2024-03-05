@@ -1,0 +1,32 @@
+BROKER SCHEMA com.mq.training
+
+
+CREATE COMPUTE MODULE msgflow_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		CREATE LASTCHILD OF OutputRoot DOMAIN('JSON');
+		CREATE FIELD OutputRoot.JSON.Data;
+		DECLARE outRef REFERENCE TO OutputRoot.JSON.Data;
+		CREATE FIELD outRef.student IDENTITY(JSON.Array)student;
+		
+		DECLARE I INTEGER 1;
+		DECLARE inRef REFERENCE TO InputRoot.XMLNSC.studentInfo.student[1];
+		WHILE (LASTMOVE(inRef)) DO
+		
+			SET outRef.student.Item[I].id=inRef.id;
+			SET outRef.student.Item[I].name= inRef.name;
+			SET outRef.student.Item[I].dept= inRef.dept;
+			SET outRef.student.Item[I].address= inRef.address;
+			SET outRef.student.Item[I].phone= inRef.phone;
+			
+			SET I = I + 1;			
+			MOVE inRef NEXTSIBLING;
+		END WHILE;
+		
+		
+		RETURN TRUE;
+	END;
+
+
+END MODULE;

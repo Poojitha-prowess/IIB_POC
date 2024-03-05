@@ -1,0 +1,17 @@
+BROKER SCHEMA com.mq.training
+
+CREATE DATABASE MODULE msgflow_Database
+    CREATE FUNCTION Main() RETURNS BOOLEAN 
+    BEGIN
+        DECLARE inRef REFERENCE TO Root.JSON.Data;
+        
+        FOR inRef AS Root.JSON.Data.student[] DO
+            FOR itemRef AS inRef.Item[] DO
+                INSERT INTO Database.student VALUES(itemRef.id, itemRef.name, itemRef.dept, itemRef.address, itemRef.phone);
+            END FOR;
+        END FOR;
+
+        RETURN TRUE;
+    END;
+
+END MODULE;
